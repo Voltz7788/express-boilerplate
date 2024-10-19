@@ -6,6 +6,7 @@ const fse = require("fs-extra");
 const fs = require("fs/promises");
 const { exec } = require("child_process");
 const { mkdirSync } = require("fs-extra");
+const chalk = require("chalk");
 
 const { resolve, join } = path;
 const { copy } = fse;
@@ -16,13 +17,13 @@ async function getProjectName() {
     {
       type: "input",
       name: "projectName",
-      message: "Enter your project name: ",
+      message: chalk.default.cyan.bold("Enter your project name: "),
       default: "my-express-app",
     },
     {
       type: "number",
       name: "desiredPort",
-      message: "Enter your desired port: ",
+      message: chalk.default.cyan.bold("Enter your desired port: "),
       default: 3010,
     },
   ]);
@@ -91,14 +92,20 @@ async function installDependencies(targetDir) {
   const pnpmInstalled = await checkPnpmInstalled();
   const packageManager = pnpmInstalled ? "pnpm" : "npm";
 
-  console.log(`Using ${packageManager} to install dependencies.`);
+  console.log(
+    chalk.default.cyan.bold(
+      `\nUsing ${packageManager} to install dependencies.\n`
+    )
+  );
 
   // Wrap each `exec` call in a promise
   const runCommand = (cmd) =>
     new Promise((resolve, reject) => {
       exec(cmd, { cwd: targetDir }, (error, stdout, stderr) => {
         if (error) {
-          console.error(`Error executing "${cmd}": ${stderr}`);
+          console.error(
+            chalk.default.red(`Error executing "${cmd}": ${stderr}`)
+          );
           reject(error);
         } else {
           console.log(stdout);
@@ -113,7 +120,7 @@ async function installDependencies(targetDir) {
     await runCommand("git init");
     await runCommand("git add . && git commit -m 'Initial commit'");
   } catch (error) {
-    console.error("Error during the setup process: ", error);
+    console.error(chalk.default.red("Error during the setup process: ", error));
     throw error;
   }
 }
@@ -132,9 +139,13 @@ async function run() {
     // Automatically run pnpm install
     await installDependencies(targetDir);
 
-    console.log(`\nProject ${answers.projectName} created successfully!`);
+    console.log(
+      chalk.default.green.bold(
+        `\nProject ${answers.projectName} created successfully!\n`
+      )
+    );
   } catch (err) {
-    console.error(`Error creating project: ${err}`);
+    console.error(chalk.default.red(`Error creating project: ${err}`));
   }
 }
 
