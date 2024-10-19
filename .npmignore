@@ -1,0 +1,10 @@
+# Ignore everything in this directory
+/node_modules
+
+
+# Make sure these are included
+!/dist
+!.gitignore
+!Dockerfile
+!docker-compose.yaml
+!template/

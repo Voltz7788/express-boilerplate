@@ -2,6 +2,7 @@ const inquirer = require("inquirer");
 const path = require("path");
 const fse = require("fs-extra");
 const fs = require("fs/promises");
+const { exec } = require("child_process");
 
 const { resolve, join } = path;
 const { copy } = fse;
@@ -49,12 +50,33 @@ async function replacePlaceholders(targetDir, projectName) {
   }
 }
 
+async function installDependencies(targetDir) {
+  console.log(`\nInstalling dependencies in ${targetDir}...`);
+
+  return new Promise((resolve, reject) => {
+    // Run 'pnpm install' in the target directory
+    exec(`pnpm install`, { cwd: targetDir }, (error, stdout, stderr) => {
+      if (error) {
+        console.error(`Error installing dependencies: ${stderr}`);
+        reject(error);
+      } else {
+        console.log(stdout);
+        resolve();
+      }
+    });
+  });
+}
+
 async function run() {
   try {
     const projectName = await getProjectName();
     const targetDir = await cloneTemplate(projectName);
 
     await replacePlaceholders(targetDir, projectName);
+
+    // Automatically run pnpm install
+    await installDependencies(targetDir);
+
     console.log(`\nProject ${projectName} created successfully!`);
   } catch (err) {
     console.error(`Error creating project: ${err}`);

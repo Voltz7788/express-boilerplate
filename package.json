@@ -1,16 +1,22 @@
 {
-  "name": "create-express-app",
-  "version": "1.0.0",
-  "description": "",
+  "name": "@yannismadu/create-express-app",
+  "version": "1.0.1",
+  "description": "CLI tool to scaffold an Express.js project with TypeScript and Docker",
   "main": "index.js",
+  "bin": {
+    "create-express-app": "bin/index.js"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Yannis Madu",
+  "license": "MIT",
   "dependencies": {
     "fs-extra": "^11.2.0",
     "inquirer": "^12.0.0"
+  },
+  "devDependencies": {
+    "@types/fs-extra": "^11.0.4"
   }
 }
