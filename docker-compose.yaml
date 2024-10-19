@@ -1,0 +1,8 @@
+services:
+  job-scraper-api:
+    build: .
+    ports:
+      - "3010:3010"
+    volumes:
+      - ".:/usr/app"
+    command: npm run dev
