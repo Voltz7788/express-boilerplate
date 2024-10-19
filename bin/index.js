@@ -72,8 +72,26 @@ async function replacePlaceholders(targetDir, projectName, desiredPort) {
   mkdirSync(join(targetDir, "dist"));
 }
 
+// Helper function to check if pnpm is installed
+async function checkPnpmInstalled() {
+  return new Promise((resolve) => {
+    exec("pnpm --version", (error) => {
+      if (error) {
+        resolve(false); // pnpm is not installed
+      } else {
+        resolve(true); // pnpm is installed
+      }
+    });
+  });
+}
+
 async function installDependencies(targetDir) {
   console.log(`\nInstalling dependencies in ${targetDir}...`);
+
+  const pnpmInstalled = await checkPnpmInstalled();
+  const packageManager = pnpmInstalled ? "pnpm" : "npm";
+
+  console.log(`Using ${packageManager} to install dependencies.`);
 
   // Wrap each `exec` call in a promise
   const runCommand = (cmd) =>
@@ -91,9 +109,8 @@ async function installDependencies(targetDir) {
 
   // Run all the commands in sequence
   try {
-    await runCommand("pnpm install");
+    await runCommand(`${packageManager} install`);
     await runCommand("git init");
-    await runCommand("mkcert localhost");
     await runCommand("git add . && git commit -m 'Initial commit'");
   } catch (error) {
     console.error("Error during the setup process: ", error);
