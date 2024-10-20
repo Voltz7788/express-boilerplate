@@ -17,13 +17,13 @@ async function getProjectName() {
     {
       type: "input",
       name: "projectName",
-      message: chalk.default.cyan.bold("Enter your project name: "),
+      message: chalk.cyan.bold("Enter your project name: "),
       default: "my-express-app",
     },
     {
       type: "number",
       name: "desiredPort",
-      message: chalk.default.cyan.bold("Enter your desired port: "),
+      message: chalk.cyan.bold("Enter your desired port: "),
       default: 3010,
     },
   ]);
@@ -41,10 +41,7 @@ async function cloneTemplate(projectName) {
   return targetDir;
 }
 
-async function replacePlaceholders(targetDir, projectName, desiredPort) {
-  const actualProjectTitle =
-    projectName === "." ? path.basename(process.cwd()) : projectName;
-
+async function replacePlaceholders(targetDir, actualProjectName, desiredPort) {
   const filesToReplace = [
     join(targetDir, "package.json"),
     join(targetDir, "README.md"),
@@ -56,7 +53,7 @@ async function replacePlaceholders(targetDir, projectName, desiredPort) {
     const content = await readFile(file, "utf-8");
 
     const newContent = content
-      .replace(/project-name-placeholder/g, actualProjectTitle)
+      .replace(/project-name-placeholder/g, actualProjectName)
       .replace(/3010/g, desiredPort);
 
     await writeFile(file, newContent, "utf-8");
@@ -93,9 +90,7 @@ async function installDependencies(targetDir) {
   const packageManager = pnpmInstalled ? "pnpm" : "npm";
 
   console.log(
-    chalk.default.cyan.bold(
-      `\nUsing ${packageManager} to install dependencies.\n`
-    )
+    chalk.cyan.bold(`\nUsing ${packageManager} to install dependencies.\n`)
   );
 
   // Wrap each `exec` call in a promise
@@ -103,9 +98,7 @@ async function installDependencies(targetDir) {
     new Promise((resolve, reject) => {
       exec(cmd, { cwd: targetDir }, (error, stdout, stderr) => {
         if (error) {
-          console.error(
-            chalk.default.red(`Error executing "${cmd}": ${stderr}`)
-          );
+          console.error(chalk.red(`Error executing "${cmd}": ${stderr}`));
           reject(error);
         } else {
           console.log(stdout);
@@ -120,7 +113,7 @@ async function installDependencies(targetDir) {
     await runCommand("git init");
     await runCommand("git add . && git commit -m 'Initial commit'");
   } catch (error) {
-    console.error(chalk.default.red("Error during the setup process: ", error));
+    console.error(chalk.red("Error during the setup process: ", error));
     throw error;
   }
 }
@@ -130,9 +123,14 @@ async function run() {
     const answers = await getProjectName();
     const targetDir = await cloneTemplate(answers.projectName);
 
+    const actualProjectName =
+      answers.projectName === "."
+        ? path.basename(process.cwd())
+        : answers.projectName;
+
     await replacePlaceholders(
       targetDir,
-      answers.projectName,
+      actualProjectName,
       answers.desiredPort
     );
 
@@ -140,12 +138,10 @@ async function run() {
     await installDependencies(targetDir);
 
     console.log(
-      chalk.default.green.bold(
-        `\nProject ${answers.projectName} created successfully!\n`
-      )
+      chalk.green.bold(`\nProject ${actualProjectName} created successfully!\n`)
     );
   } catch (err) {
-    console.error(chalk.default.red(`Error creating project: ${err}`));
+    console.error(chalk.red(`Error creating project: ${err}`));
   }
 }
 
