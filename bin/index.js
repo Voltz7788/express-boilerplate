@@ -13,12 +13,15 @@ const { copy } = fse;
 const { readFile, writeFile } = fs;
 
 async function getProjectName() {
+  const args = process.argv.slice(2);
+  const fileName = args[0];
+
   const answers = await inquirer.default.prompt([
     {
       type: "input",
       name: "projectName",
       message: chalk.cyan.bold("Enter your project name: "),
-      default: "my-express-app",
+      default: fileName || "my-express-app",
     },
     {
       type: "number",

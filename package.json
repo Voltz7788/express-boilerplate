@@ -1,6 +1,6 @@
 {
   "name": "@yannismadu/create-express-app",
-  "version": "1.0.17",
+  "version": "1.0.19",
   "description": "CLI tool to scaffold an Express.js project with TypeScript and Docker",
   "main": "index.js",
   "bin": {
